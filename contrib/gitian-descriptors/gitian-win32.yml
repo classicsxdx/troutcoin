@@ -1,7 +1,7 @@
 ---
 name: "troutcoin"
 suites:
-- "percise"
+- "precise"
 architectures:
 - "amd64"
 packages:
@@ -31,7 +31,7 @@ script: |
   unzip ../build/bitcoin-deps-win32-gitian-r9.zip
   cd $HOME/build/
   #
-  cd CryptoPowers
+  cd troutcoin
   cd src/leveldb
   chmod 755 build_detect_platform
   cd ..
