@@ -1,0 +1,9 @@
+Building troutcoin
+
+See doc/readme-qt.rst for instructions on building troutcoin QT,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of troutcoin.
+
+See doc/build-*.txt for instructions on building troutcoind,
+the intended-for-services, no-graphical-interface, reference
+implementation of troutcoin.
