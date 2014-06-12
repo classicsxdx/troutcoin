@@ -154,7 +154,7 @@ OBJS= \
     obj/scrypt-x86.o \
     obj/scrypt-x86_64.o \
 
-all: boostcoind
+all: troutcoind
 
 LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
@@ -196,11 +196,11 @@ obj/%.o: %.c
       rm -f $(@:%.o=%.d)
 
 
-boostcoind: $(OBJS:obj/%=obj/%)
+troutcoind: $(OBJS:obj/%=obj/%)
     $(LINK) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
 
 clean:
-    -rm -f boostcoind
+    -rm -f troutcoind
     -rm -f obj/*.o
     -rm -f obj/*.P
     -rm -f obj/build.h
