@@ -57,18 +57,7 @@ LIBS += -l mingwthrd -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l w
 HEADERS = $(wildcard *.h)
 
 OBJS= \
-    obj/aes_helper.o \
-    obj/skein.o \
-    obj/blake.o \
-    obj/bmw.o \
-    obj/echo.o \
-    obj/cubehash.o \
-    obj/jh.o \
-    obj/groestl.o \
-    obj/luffa.o \
-    obj/keccak.o \
-    obj/simd.o \
-    obj/shavite.o \
+    leveldb/libleveldb.a \
     obj/alert.o \
     obj/version.o \
     obj/checkpoints.o \
@@ -78,9 +67,7 @@ OBJS= \
     obj/key.o \
     obj/db.o \
     obj/init.o \
-    obj/irc.o \
     obj/keystore.o \
-    obj/miner.o \
     obj/main.o \
     obj/net.o \
     obj/protocol.o \
@@ -88,6 +75,7 @@ OBJS= \
     obj/rpcdump.o \
     obj/rpcnet.o \
     obj/rpcmining.o \
+    obj/rpcdarksend.o \
     obj/rpcwallet.o \
     obj/rpcblockchain.o \
     obj/rpcrawtransaction.o \
@@ -97,14 +85,24 @@ OBJS= \
     obj/wallet.o \
     obj/walletdb.o \
     obj/noui.o \
-    obj/kernel.o \
-    obj/pbkdf2.o \
-    obj/scrypt.o \
-    obj/scrypt-arm.o \
-    obj/scrypt-x86.o \
-    obj/scrypt-x86_64.o \
+    obj/hash.o \
+    obj/bloom.o \
+    obj/leveldb.o \
+    obj/txdb.o\
+    obj/blake.o\
+    obj/bmw.o\
+    obj/groestl.o\
+    obj/jh.o\
+    obj/keccak.o\
+    obj/skein.o\
+    obj/cubehash.o \
+    obj/luffa.o \
+    obj/aes_helper.o \
+    obj/echo.o \
+    obj/shavite.o \
+    obj/simd.o 
 
-all: troutcoind.exe
+all: darkcoind.exe
 
 DEFS += -I"$(CURDIR)/leveldb/include"
 DEFS += -I"$(CURDIR)/leveldb/helpers"
@@ -122,7 +120,7 @@ obj/%.o: %.cpp $(HEADERS)
 obj/%.o: %.c $(HEADERS)
 	$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
 
-troutcoind.exe: $(OBJS:obj/%=obj/%)
+darkcoind.exe: $(OBJS:obj/%=obj/%)
 	$(CXX) $(xCXXFLAGS) $(xLDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
@@ -130,15 +128,15 @@ TESTOBJS := $(patsubst test/%.cpp,obj-test/%.o,$(wildcard test/*.cpp))
 obj-test/%.o: test/%.cpp $(HEADERS)
 	$(CXX) -c $(TESTDEFS) $(xCXXFLAGS) -o $@ $<
 
-test_troutcoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
+test_darkcoin.exe: $(TESTOBJS) $(filter-out obj/init.o,$(OBJS:obj/%=obj/%))
 	$(CXX) $(xCXXFLAGS) $(xLDFLAGS) -o $@ $(LIBPATHS) $^ -lboost_unit_test_framework-mt-s $(LIBS)
 
 
 clean:
 	-rm -f obj/*.o
-	-rm -f troutcoind.exe
+	-rm -f darkcoind.exe
 	-rm -f obj-test/*.o
-	-rm -f test_troutcoin.exe
+	-rm -f test_darkcoin.exe
 	-rm -f obj/build.h
 	cd leveldb && TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) clean && cd ..
 
