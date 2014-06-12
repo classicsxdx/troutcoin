@@ -117,22 +117,13 @@ version.cpp: obj/build.h
 DEFS += -DHAVE_BUILD_INFO
 
 obj/%.o: %.cpp $(HEADERS)
-		$(CXX) -c $(xCXXFLAGS) -o $@ $<
+	$(CXX) -c $(xCXXFLAGS) -o $@ $<
 
 obj/%.o: %.c $(HEADERS)
-		$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
+	$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
 
 troutcoind.exe: $(OBJS:obj/%=obj/%)
-		$(CXX) $(xCXXFLAGS) $(xLDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
-
-obj/scrypt-x86.o: scrypt-x86.S
-		$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
-
-obj/scrypt-x86_64.o: scrypt-x86_64.S
-		$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
-
-obj/scrypt-arm.o: scrypt-arm.S
-		$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
+	$(CXX) $(xCXXFLAGS) $(xLDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 clean:
     -rm -f obj/*.o
