@@ -125,14 +125,22 @@ obj/scrypt-x86_64.o: scrypt-x86_64.S
 obj/scrypt-arm.o: scrypt-arm.S
 	$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
-obj/%.o: %.cpp $(HEADERS)
-	$(CXX) -c $(xCXXFLAGS) -o $@ $<
+obj/%.o: %.cpp
+$(CXX) -c $(xCXXFLAGS) -MMD -MF $(@:%.o=%.d) -o $@ $<
+@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+-e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+rm -f $(@:%.o=%.d)
 
-obj/%.o: %.c $(HEADERS)
-	$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
+obj/%.o: %.c
+$(CXX) -c $(xCXXFLAGS) -fpermissive -MMD -MF $(@:%.o=%.d) -o $@ $<
+@cp $(@:%.o=%.d) $(@:%.o=%.P); \
+sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
+              -e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
+rm -f $(@:%.o=%.d)
 
-troutcoind.exe: $(OBJS:obj/%=obj/%)
-	$(CXX) $(xCXXFLAGS) $(xLDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
+troutcoind: $(OBJS:obj/%=obj/%)
+$(LINK) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
 
 clean:
 	-rm -f obj/*.o
