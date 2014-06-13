@@ -5,6 +5,9 @@
 USE_UPNP:=0
 USE_IPV6:=1
 
+DEPSDIR?=/usr/local
+BOOST_SUFFIX?=-mgw48-mt-s-1_55
+
 LINK:=$(CXX)
 ARCH:=$(system lscpu | head -n 1 | awk '{print $2}')
 
