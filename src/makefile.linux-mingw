@@ -145,7 +145,7 @@ obj/%.o: %.c
 				-e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
 			rm -f $(@:%.o=%.d)
 
-troutcoind: $(OBJS:obj/%=obj/%)
+troutcoind.exe: $(OBJS:obj/%=obj/%)
 		$(CXX) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
 
 clean:
