@@ -23,16 +23,16 @@ ifdef STATIC
 endif
 
 # for boost 1.37, add -mt to the boost libraries
-LIBS= \
-  $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a \
- -l boost_system-mt-s \
- -l boost_filesystem-mt-s \
- -l boost_program_options-mt-s \
- -l boost_thread_win32-mt-s \
- -l boost_chrono-mt-s \
- -l db_cxx \
- -l ssl \
- -l crypto
+LIBS += \
+ -Wl,-B$(LMODE) \
+   -l boost_system-mt-s \
+   -l boost_filesystem-mt-s \
+   -l boost_program_options-mt-s \
+   -l boost_thread_win32-mt-s \
+   -l boost_chrono-mt-s \
+   -l db_cxx-4.8 \
+   -l ssl \
+   -l crypto
 
 ifndef USE_UPNP
 	override USE_UPNP = -
