@@ -2,110 +2,59 @@
 # Distributed under the MIT/X11 software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+DEPSDIR:=/usr/i686-w64-mingw32
+
+CC := i686-w64-mingw32-gcc
+CXX := i686-w64-mingw32-g++
+
 USE_UPNP:=0
 USE_IPV6:=1
 
-LINK:=$(CXX)
-ARCH:=$(system lscpu | head -n 1 | awk '{print $2}')
+INCLUDEPATHS= \
+ -I"$(CURDIR)" \
+ -I"$(CURDIR)"/obj \
+ -I"$(DEPSDIR)/include" \
+ -I"$(DEPSDIR)"
 
-DEFS=-DBOOST_SPIRIT_THREADSAFE
+LIBPATHS= \
+ -L"$(DEPSDIR)/lib"
 
-DEFS += $(addprefix -I,$(CURDIR) $(CURDIR)/obj $(BOOST_INCLUDE_PATH) $(BDB_INCLUDE_PATH) $(OPENSSL_INCLUDE_PATH))
-LIBS = $(addprefix -L,$(BOOST_LIB_PATH) $(BDB_LIB_PATH) $(OPENSSL_LIB_PATH))
+LIBS= \
+  $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a \
+ -l boost_system-mt-s \
+ -l boost_filesystem-mt-s \
+ -l boost_program_options-mt-s \
+ -l boost_thread_win32-mt-s \
+ -l boost_chrono-mt-s \
+ -l db_cxx \
+ -l ssl \
+ -l crypto
 
-LMODE = dynamic
-LMODE2 = dynamic
-ifdef STATIC
-	LMODE = static
-	ifeq (${STATIC}, all)
-		LMODE2 = static
-	endif
-endif
+DEFS=-D_MT -DWIN32 -D_WINDOWS -DBOOST_THREAD_USE_LIB -DBOOST_SPIRIT_THREADSAFE
+DEBUGFLAGS=-g
+xCXXFLAGS=-O2 -w -Wall -Wextra -Wformat -Wformat-security -Wno-unused-parameter $(DEBUGFLAGS) $(DEFS) $(INCLUDEPATHS) $(CXXFLAGS)
+# enable: ASLR, DEP and large address aware
+xLDFLAGS=-Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware -static-libgcc -static-libstdc++ $(LDFLAGS)
 
-# for boost 1.37, add -mt to the boost libraries
-LIBS += \
- -Wl,-B$(LMODE) \
-   -l boost_system-mt-s \
-   -l boost_filesystem-mt-s \
-   -l boost_program_options-mt-s \
-   -l boost_thread_win32-mt-s \
-   -l boost_chrono-mt-s \
-   -l db_cxx-4.8 \
-   -l ssl \
-   -l crypto
+TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
 
 ifndef USE_UPNP
 	override USE_UPNP = -
 endif
 ifneq (${USE_UPNP}, -)
-	LIBS += -l miniupnpc
-	DEFS += -DUSE_UPNP=$(USE_UPNP)
+	LIBPATHS += -L"$(DEPSDIR)/miniupnpc"
+	LIBS += -l miniupnpc -l iphlpapi
+	DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
 endif
 
 ifneq (${USE_IPV6}, -)
 	DEFS += -DUSE_IPV6=$(USE_IPV6)
 endif
 
-LIBS+= \
- -Wl,-B$(LMODE2) \
-   -l z \
-   -l dl \
-   -l pthread
+LIBS += -l mingwthrd -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l winmm -l shell32 -l comctl32 -l ole32 -l oleaut32 -l uuid -l rpcrt4 -l advapi32 -l ws2_32 -l mswsock -l shlwapi
 
-
-# Hardening
-# Make some classes of vulnerabilities unexploitable in case one is discovered.
-#
-	# This is a workaround for Ubuntu bug #691722, the default -fstack-protector causes
-	# -fstack-protector-all to be ignored unless -fno-stack-protector is used first.
-	# see: https://bugs.launchpad.net/ubuntu/+source/gcc-4.5/+bug/691722
-	HARDENING=-fno-stack-protector
-
-	# Stack Canaries
-	# Put numbers at the beginning of each stack frame and check that they are the same.
-	# If a stack buffer if overflowed, it writes over the canary number and then on return
-	# when that number is checked, it won't be the same and the program will exit with
-	# a "Stack smashing detected" error instead of being exploited.
-	HARDENING+=-fstack-protector-all -Wstack-protector
-
-	# Make some important things such as the global offset table read only as soon as
-	# the dynamic linker is finished building it. This will prevent overwriting of addresses
-	# which would later be jumped to.
-	LDHARDENING+=-Wl,-z,relro -Wl,-z,now
-
-	# Build position independent code to take advantage of Address Space Layout Randomization
-	# offered by some kernels.
-	# see doc/build-unix.txt for more information.
-	ifdef PIE
-		HARDENING+=-fPIE
-		LDHARDENING+=-pie
-	endif
-
-	# -D_FORTIFY_SOURCE=2 does some checking for potentially exploitable code patterns in
-	# the source such overflowing a statically defined buffer.
-	HARDENING+=-D_FORTIFY_SOURCE=2
-#
-
-
-DEBUGFLAGS=-g
-
-
-ifeq (${ARCH}, i686)
-	EXT_OPTIONS=-msse2
-endif
-
-
-# CXXFLAGS can be specified on the make command line, so we use xCXXFLAGS that only
-# adds some defaults in front. Unfortunately, CXXFLAGS=... $(CXXFLAGS) does not work.
-xCXXFLAGS=-O2 $(EXT_OPTIONS) -pthread -Wall -Wextra -Wno-ignored-qualifiers -Wformat -Wformat-security -Wno-unused-parameter \
-	$(DEBUGFLAGS) $(DEFS) $(HARDENING) $(CXXFLAGS)
-
-# LDFLAGS can be specified on the make command line, so we use xLDFLAGS that only
-# adds some defaults in front. Unfortunately, LDFLAGS=... $(LDFLAGS) does not work.
-xLDFLAGS=$(LDHARDENING) $(LDFLAGS)
-
-#bmw.c       echo.c     jh.c      luffa.c    simd.c
-# blake.c       cubehash.c  groestl.c  keccak.c  shavite.c  skein.c
+# TODO: make the mingw builds smarter about dependencies, like the linux/osx builds are
+HEADERS = $(wildcard *.h)
 
 OBJS= \
 	obj/aes_helper.o \

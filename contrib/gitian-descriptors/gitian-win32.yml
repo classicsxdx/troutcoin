@@ -54,7 +54,21 @@ script: |
   export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
   export FAKETIME=$REFERENCE_DATETIME
   export TZ=UTC
-  make -f makefile.linux-mingw $MAKEOPTS BDB_LIB_PATH=$STAGING BDB_INCLUDE_PATH=$STAGING BOOST_LIB_PATH=$STAGING BOOST_INCLUDE_PATH=$STAGING BOOST_LIB_SUFFIX=-mt-s BOOST_THREAD_LIB_SUFFIX=_win32-mt-s OPENSSL_LIB_PATH=$STAGING OPENSSL_INCLUDE_PATH=$STAGING DEPSDIR=$STAGING troutcoind.exe USE_UPNP=0 DEBUGFLAGS="-frandom-seed=troutcoin" USE_SSE2=1
+  make -f makefile.linux-mingw $MAKEOPTS DEPSDIR=$STAGING troutcoind.exe USE_UPNP=0 DEBUGFLAGS="-frandom-seed=troutcoin" USE_SSE2=1
+  $HOST-strip darkcoind.exe
+  mkdir $OUTDIR/daemon
+  cp darkcoind.exe $OUTDIR/daemon
+  cd ..
+  mkdir nsis
+  git archive HEAD | tar -x -C nsis
+  cd nsis/src
+  mkdir ../release
+  cp ../../release/* ../release/
+  cp ../../src/*.exe .
+  makensis ../share/setup.nsi
+  cp ../share/darkcoin-*-win32-setup.exe $OUTDIR/
+
+
   $HOST-strip troutcoind.exe
   mkdir $OUTDIR/daemon
   cp troutcoind.exe $OUTDIR/daemon
