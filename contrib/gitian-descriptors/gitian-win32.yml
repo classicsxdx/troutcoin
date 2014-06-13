@@ -55,9 +55,9 @@ script: |
   export FAKETIME=$REFERENCE_DATETIME
   export TZ=UTC
   make -f makefile.linux-mingw $MAKEOPTS DEPSDIR=$STAGING troutcoind.exe USE_UPNP=0 DEBUGFLAGS="-frandom-seed=troutcoin" USE_SSE2=1
-  $HOST-strip darkcoind.exe
+  $HOST-strip troutcoind.exe
   mkdir $OUTDIR/daemon
-  cp darkcoind.exe $OUTDIR/daemon
+  cp troutcoind.exe $OUTDIR/daemon
   cd ..
   mkdir nsis
   git archive HEAD | tar -x -C nsis
@@ -66,7 +66,7 @@ script: |
   cp ../../release/* ../release/
   cp ../../src/*.exe .
   makensis ../share/setup.nsi
-  cp ../share/darkcoin-*-win32-setup.exe $OUTDIR/
+  cp ../share/troutcoin-*-win32-setup.exe $OUTDIR/
 
 
   $HOST-strip troutcoind.exe
