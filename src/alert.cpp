@@ -2,9 +2,7 @@
 // Alert system
 //
 
-#include <algorithm>
 
-#include <boost/algorithm/string/replace.hpp>
 #include <boost/foreach.hpp>
 #include <map>
 
