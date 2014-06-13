@@ -154,7 +154,7 @@ OBJS= \
     obj/scrypt-x86.o \
     obj/scrypt-x86_64.o \
 
-all: troutcoind
+all: troutcoind.exe
 
 LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
@@ -195,12 +195,11 @@ obj/%.o: %.c
 			-e '/^$$/ d' -e 's/$$/ :/' < $(@:%.o=%.d) >> $(@:%.o=%.P); \
 		rm -f $(@:%.o=%.d)
 
-
-troutcoind: $(OBJS:obj/%=obj/%)
-	$(LINK) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
+darkcoind.exe: $(OBJS:obj/%=obj/%)
+	$(CXX) $(xCXXFLAGS) $(xLDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 clean:
-	-rm -f troutcoind
+	-rm -f troutcoind.exe
 	-rm -f obj/*.o
 	-rm -f obj/*.P
 	-rm -f obj/build.h
