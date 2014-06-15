@@ -81,7 +81,8 @@ LIBS+= \
     endif
 
     # -D_FORTIFY_SOURCE=2 does some checking for potentially exploitable code patterns in
-    # the source such overflowing a statically defined buffer.
+    # the source such overflowing a statically defined 
+    buffer.
     HARDENING+=-D_FORTIFY_SOURCE=2
 #
 
@@ -154,14 +155,14 @@ OBJS= \
     obj/scrypt-x86.o \
     obj/scrypt-x86_64.o \
 
-all: troutcoind
+all: troutcoind.exe
 
 LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 OBJS += obj/txdb-leveldb.o
 leveldb/libleveldb.a:
-		@echo "Building LevelDB ..."; cd leveldb; make libleveldb.a libmemenv.a; cd ..;
+	@echo "Building LevelDB ..." && cd leveldb && TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) CC=$(CC) CXX=$(CXX) OPT="$(xCXXFLAGS)" libleveldb.a libmemenv.a && i686-w64-mingw32-ranlib libleveldb.a && i686-w64-mingw32-ranlib libmemenv.a && cd ..
 obj/txdb-leveldb.o: leveldb/libleveldb.a
 
 # auto-generated dependencies:
