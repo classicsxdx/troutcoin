@@ -57,6 +57,7 @@ LIBS += -l mingwthrd -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l w
 HEADERS = $(wildcard *.h)
 
 OBJS= \
+	leveldb/libleveldb.a \
 	obj/aes_helper.o \
 	obj/skein.o \
 	obj/blake.o \
@@ -106,7 +107,6 @@ OBJS= \
 
 all: troutcoind.exe
 
-LIBS += $(CURDIR)/leveldb/libleveldb.a $(CURDIR)/leveldb/libmemenv.a
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/include)
 DEFS += $(addprefix -I,$(CURDIR)/leveldb/helpers)
 OBJS += obj/txdb-leveldb.o
@@ -152,3 +152,4 @@ clean:
 	-rm -f obj/build.h
 
 FORCE:
+
