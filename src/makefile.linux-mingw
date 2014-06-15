@@ -81,10 +81,9 @@ LIBS+= \
 	endif
 
 	# -D_FORTIFY_SOURCE=2 does some checking for potentially exploitable code patterns in
-	# the source such overflowing a statically defined 
-	buffer.
+	# the source such overflowing a statically defined buffer.
 	HARDENING+=-D_FORTIFY_SOURCE=2
-#
+	#
 
 
 DEBUGFLAGS=-g
