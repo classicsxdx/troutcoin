@@ -44,6 +44,7 @@ script: |
   export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
   export FAKETIME=$REFERENCE_DATETIME
   export TZ=UTC
+  cd src
   make -f makefile.linux-mingw $MAKEOPTS DEPSDIR=$STAGING troutcoind.exe USE_UPNP=0 DEBUGFLAGS="-frandom-seed=troutcoin" USE_SSE2=1
   $HOST-strip troutcoind.exe
   mkdir $OUTDIR/daemon
