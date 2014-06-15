@@ -146,7 +146,7 @@ obj/%.o: %.c
 			rm -f $(@:%.o=%.d)
 
 troutcoind.exe: $(OBJS:obj/%=obj/%)
-		$(CXX) $(xCXXFLAGS) -o $@ $^ $(xLDFLAGS) $(LIBS)
+		$(CXX) $(xCXXFLAGS) $(xLDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 clean:
 	-rm -f troutcoind.exe
