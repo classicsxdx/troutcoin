@@ -31,7 +31,16 @@ script: |
   unzip ../build/bitcoin-deps-win32-gitian-r9.zip
   cd $HOME/build/
   #
-  cd src
+  cd troutcoin
+  cd src/leveldb
+  chmod 755 build_detect_platform
+  cd ..
+  cd ..
+  export PATH=$STAGING/host/bin:$PATH
+  mkdir -p $OUTDIR/src
+  git archive HEAD | tar -x -C $OUTDIR/src
+  cp $OUTDIR/src/doc/README_windows.txt $OUTDIR/readme.txt
+  cp $OUTDIR/src/COPYING $OUTDIR/COPYING.txt
   export LD_PRELOAD=/usr/lib/faketime/libfaketime.so.1
   export FAKETIME=$REFERENCE_DATETIME
   export TZ=UTC
@@ -49,16 +58,3 @@ script: |
   makensis ../share/setup.nsi
   cp ../share/troutcoin-*-win32-setup.exe $OUTDIR/
 
-
-  $HOST-strip troutcoind.exe
-  mkdir $OUTDIR/daemon
-  cp troutcoind.exe $OUTDIR/daemon
-  cd ..
-  mkdir nsis
-  git archive HEAD | tar -x -C nsis
-  cd nsis/src
-  mkdir ../release
-  cp ../../release/* ../release/
-  cp ../../src/*.exe .
-  makensis ../share/setup.nsi
-  cp ../share/troutcoin-*-win32-setup.exe $OUTDIR/
