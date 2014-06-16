@@ -126,7 +126,7 @@ obj/scrypt-arm.o: scrypt-arm.S
 		$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
 obj/%.o: %.cpp $(HEADERS)
-$(CXX) -c $(xCXXFLAGS) -o $@ $<
+		$(CXX) -c $(xCXXFLAGS) -o $@ $<
 
 obj/%.o: %.c $(HEADERS)
 		$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
