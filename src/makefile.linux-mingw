@@ -126,7 +126,7 @@ obj/scrypt-arm.o: scrypt-arm.S
 		$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
 obj/%.o: %.cpp $(HEADERS)
-		$(CXX) -c $(xCXXFLAGS) -o $@ $<
+		$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
 
 obj/%.o: %.c $(HEADERS)
 		$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
@@ -136,10 +136,7 @@ troutcoind.exe: $(OBJS:obj/%=obj/%)
 
 clean:
 -rm -f obj/*.o
--rm -f darkcoind.exe
--rm -f obj-test/*.o
--rm -f test_darkcoin.exe
+-rm -f troutcoins.exe
 -rm -f obj/build.h
-cd leveldb && TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) clean && cd ..
 
 FORCE:
