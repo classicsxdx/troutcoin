@@ -39,16 +39,16 @@ xLDFLAGS=-Wl,--dynamicbase -Wl,--nxcompat -Wl,--large-address-aware -static-libg
 TESTDEFS = -DTEST_DATA_DIR=$(abspath test/data)
 
 ifndef USE_UPNP
-override USE_UPNP = -
+		override USE_UPNP = -
 endif
 ifneq (${USE_UPNP}, -)
-LIBPATHS += -L"$(DEPSDIR)/miniupnpc"
-LIBS += -l miniupnpc -l iphlpapi
-DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
+		LIBPATHS += -L"$(DEPSDIR)/miniupnpc"
+		LIBS += -l miniupnpc -l iphlpapi
+		DEFS += -DSTATICLIB -DUSE_UPNP=$(USE_UPNP)
 endif
 
 ifneq (${USE_IPV6}, -)
-DEFS += -DUSE_IPV6=$(USE_IPV6)
+		DEFS += -DUSE_IPV6=$(USE_IPV6)
 endif
 
 LIBS += -l mingwthrd -l kernel32 -l user32 -l gdi32 -l comdlg32 -l winspool -l winmm -l shell32 -l comctl32 -l ole32 -l oleaut32 -l uuid -l rpcrt4 -l advapi32 -l ws2_32 -l mswsock -l shlwapi
@@ -104,7 +104,7 @@ OBJS= \
 	obj/scrypt-x86.o \
 	obj/scrypt-x86_64.o \
 
-all: troutcoin.exe
+all: troutcoind.exe
 
 DEFS += -I"$(CURDIR)/leveldb/include"
 DEFS += -I"$(CURDIR)/leveldb/helpers"
@@ -126,17 +126,18 @@ obj/scrypt-arm.o: scrypt-arm.S
 		$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
 obj/%.o: %.cpp $(HEADERS)
-		$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
+		$(CXX) -c $(xCXXFLAGS) -MMD -o $@ $<
 
 obj/%.o: %.c $(HEADERS)
-		$(CXX) -c $(xCXXFLAGS) -fpermissive -o $@ $<
+		$(CXX) -c $(xCXXFLAGS) -MMD -fpermissive -o $@ $<
 
 troutcoind.exe: $(OBJS:obj/%=obj/%)
 		$(CXX) $(xCXXFLAGS) $(xLDFLAGS) -o $@ $(LIBPATHS) $^ $(LIBS)
 
 clean:
--rm -f obj/*.o
--rm -f troutcoins.exe
--rm -f obj/build.h
+		-rm -f obj/*.o
+		-rm -f troutcoind.exe
+		-rm -f obj/build.h
+		cd leveldb && TARGET_OS=OS_WINDOWS_CROSSCOMPILE $(MAKE) clean && cd ..
 
 FORCE:
